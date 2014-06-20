@@ -7,8 +7,8 @@ app.controller('AppCtrl', ['$scope', 'socket', function($scope, socket) {
   socket.on('init', function (data) {
     console.log(data)
     $scope.name = data.name;
-    console.log(data.user)
-    $scope.users = data.user;
+    console.log(data.users)
+    $scope.users = data.users;
   });
 
   socket.on('send:message', function (message) {
@@ -49,6 +49,7 @@ app.controller('AppCtrl', ['$scope', 'socket', function($scope, socket) {
   var changeName = function (oldName, newName) {
     // rename user in list of users
     console.log('step 2 controller.js')
+    console.log('$scope.users in changName:', $scope.users);
     var i;
     for (i = 0; i < $scope.users.length; i++) {
       if ($scope.users[i] == oldName) {
