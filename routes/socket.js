@@ -1,28 +1,16 @@
 /*
  * Serve content over a socket
  */
-
-module.exports = function (socket) {
-  socket.emit('send:name', {
-    name: 'Bob'
-  });
-
-  setInterval(function () {
-    socket.emit('send:time', {
-      time: (new Date()).toString()
-    });
-  }, 1000);
-};
-
+var io = require('socket.io');
 // Keep track of which names are used so that there are no duplicates
 var userNames = (function () {
   var names = {};
 
   var claim = function (name) {
-    if (!name || userNames[name]) {
+    if (!name || names[name]) {
       return false;
     } else {
-      userNames[name] = name;
+      names[name] = true;
       return true
     }
   };
@@ -42,17 +30,17 @@ var userNames = (function () {
 
   // serialize claimed names as an array
   var get = function () {
-    var res = [];
-    for (user in userNames) {
-      res.push(user);
+    var results = [];
+    for (user in names) {
+      results.push(user);
     }
 
-    return res;
+    return results;
   };
 
   var free = function (name) {
-    if (userNames[name]) {
-      delete userNames[name];
+    if (names[name]) {
+      delete names[name];
     }
   };
 
@@ -65,7 +53,7 @@ var userNames = (function () {
 })();
 
 // export function for listening to the socket
-module.exports = function(socket) {
+module.exports = function(io, socket) {
   var name = userNames.getGuestName();
 
   //send the new user their name and a list of users
@@ -81,14 +69,17 @@ module.exports = function(socket) {
 
   // broadcast a user's message to other users
   socket.on('send:message', function (data) {
+    console.log("im in sockets looking at id:", data.id)
     socket.broadcast.emit('send:message', {
       user: name,
-      text: data.message
+      text: data.message,
+      id: data.id
     });
   });
 
   // validate a user's name change, and broadcast it on success
   socket.on('change:name', function (data, fn) {
+    console.log(data);
     if (userNames.claim(data.name)) {
       var oldName = name;
       userNames.free(oldName);

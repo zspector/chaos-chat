@@ -16,6 +16,7 @@ app.controller('AppCtrl', ['$scope', 'socket', function($scope, socket) {
   });
 
   socket.on('change:name', function (data) {
+    console.log("is change:name working?")
     changeName(data.oldName, data.newName);
   });
 
@@ -38,7 +39,7 @@ app.controller('AppCtrl', ['$scope', 'socket', function($scope, socket) {
     for (i = 0; i < $scope.users.length; i++) {
       user = $scope.users[i];
       if (user === data.name) {
-        $scope.user.splice(i, 1);
+        $scope.users.splice(i, 1);
         break;
       }
     }
@@ -50,11 +51,14 @@ app.controller('AppCtrl', ['$scope', 'socket', function($scope, socket) {
     // rename user in list of users
     console.log('step 2 controller.js')
     console.log('$scope.users in changName:', $scope.users);
+    console.log("oldName in changName:", oldName);
+    console.log("newNmae in changName:", newName);
     var i;
     for (i = 0; i < $scope.users.length; i++) {
       if ($scope.users[i] == oldName) {
         $scope.users[i] = newName;
       }
+      console.log("i'm in a for loop!",$scope.users)
     }
 
     $scope.messages.push({
@@ -65,7 +69,7 @@ app.controller('AppCtrl', ['$scope', 'socket', function($scope, socket) {
 
   // Methods published to the scope
 
-  $scope.changeName = function () {
+  $scope.requestChangeName = function () {
     socket.emit('change:name', {
       name: $scope.newName
     }, function (result) {
@@ -84,13 +88,15 @@ app.controller('AppCtrl', ['$scope', 'socket', function($scope, socket) {
   };
 
   $scope.sendMessage = function () {
+    var id = Math.round(Math.random() * 10000000 / 100)
     socket.emit('send:message', {
-      message: $scope.message
+      message: $scope.message,
+      id: id
     });
 
     // add the message to our model locally
     $scope.messages.push({
-      id: Math.round(Math.random() * 10000000 / 100),
+      id: id,
       user: $scope.name,
       text: $scope.message
     });

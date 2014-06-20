@@ -19,9 +19,16 @@ block body
         input(type='submit', value='Send', ng-click='sendMessage()')
 
     .clr
+      h3 Change a message
+      form(ng-submit='requestMessageChange()')
+        input(ng-model='id', placeholder='Enter Id')
+        input(ng-model='newMessage', placeholder='New Message')
+        input(type='submit', value='Change Message')
+
+    .clr
       h3 Change your name
       p Your current user name is
-      form(ng-submit='changeName()')
+      form(ng-submit='requestChangeName()')
         input(ng-model='newName')
         input(type='submit', value='Change Name')
 

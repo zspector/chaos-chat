@@ -53,7 +53,8 @@ app.get('/api/name', api.name);
 app.get('*', routes.index);
 
 // Socket.io Communication
-io.sockets.on('connection', require('./routes/socket'));
+var sockets = require('./routes/socket');
+io.sockets.on('connection', sockets.bind(this, io));
 
 /**
  * Start Server
